@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "640019367982",
+    "firebase_url": "https://daun-chat.firebaseio.com",
+    "project_id": "daun-chat",
+    "storage_bucket": "daun-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:640019367982:android:5296a387e3f23c41",
+        "android_client_info": {
+          "package_name": "com.example.pc.chatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "640019367982-d66gslec365glc2jjav2v4uh83gf49cr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIjqfV3A8OW-x0-WmQaaKFC45i-21kFH8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
