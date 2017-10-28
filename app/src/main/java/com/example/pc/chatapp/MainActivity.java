@@ -1,6 +1,7 @@
 package com.example.pc.chatapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -27,6 +29,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
     private ChildEventListener childEventListener;
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener;
+    private FirebaseStorage firebaseStorage;
+    private StorageReference chatPhotoStorageReference;
 
 
     @Override
@@ -62,9 +69,11 @@ public class MainActivity extends AppCompatActivity {
         userName = ANONYMOUS;
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        messagesDatabaseReference = firebaseDatabase.getReference().child("message");
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
 
+        messagesDatabaseReference = firebaseDatabase.getReference().child("message");
+        chatPhotoStorageReference = firebaseStorage.getReference().child("chat_photos");
 
         messageListView = (ListView) findViewById(R.id.messageListView);
         photoPickerButton = (ImageButton) findViewById(R.id.photoPickerButton);
@@ -208,7 +217,23 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == RESULT_CANCELED){
                     Toast.makeText(this, "Signed out", Toast.LENGTH_SHORT).show();
                     finish();
-                }
+                }else
+                    if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK ){
+                        Uri selectedImageUri = data.getData();
+                        // get a reference to store file at chat-photos/<filename>
+                        StorageReference photoReference = chatPhotoStorageReference.child(selectedImageUri.getLastPathSegment());
+
+                        //upload file to firebase storage
+                        photoReference.putFile(selectedImageUri).addOnSuccessListener
+                                (this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                        Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                        messagesModel message = new messagesModel(null, userName, downloadUrl.toString());
+                                        messagesDatabaseReference.push().setValue(message);
+                                    }
+                                });
+                    }
         }
     }
 
